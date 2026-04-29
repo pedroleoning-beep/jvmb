@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JVMB — Requerimientos Vecinales</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#1a2e4a;--blue:#4a7fa5;--sky:#a8c8e0;--sage:#5a8a6a;
+    --sage-l:#8ab89a;--cream:#f0f4f8;--white:#ffffff;--muted:#6a8aaa;--border:#c8dce8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--cream);min-height:100vh;}
+  .nav{background:var(--navy);display:flex;}
+  .nav-btn{flex:1;padding:13px 6px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;font-family:'Nunito',sans-serif;letter-spacing:0.3px;}
+  .nav-btn.active{color:var(--sky);border-bottom-color:var(--sky);}
+  .header{background:var(--navy);padding:20px 16px 32px;text-align:center;position:relative;overflow:hidden;}
+  .header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:20px;background:var(--cream);border-radius:20px 20px 0 0;}
+  .logo-circle{width:64px;height:64px;border-radius:50%;background:var(--white);border:3px solid var(--sky);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+  .header-sub{font-size:10px;letter-spacing:2px;color:var(--sage-l);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+  .header h1{font-family:'Libre Baskerville',serif;font-size:22px;color:var(--white);font-weight:700;line-height:1.2;margin-bottom:2px;}
+  .header-city{font-size:11px;color:var(--sky);letter-spacing:2px;text-transform:uppercase;margin-top:6px;}
+  .form-wrap{padding:20px 16px;max-width:480px;margin:0 auto;}
+  .section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;letter-spacing:0.3px;}
+  .field input,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Nunito',sans-serif;background:var(--white);color:var(--navy);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+  .field input:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,127,165,0.12);}
+  .field textarea{resize:vertical;min-height:90px;line-height:1.5;}
+  .cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .cat-btn{padding:12px 8px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);cursor:pointer;text-align:center;font-family:'Nunito',sans-serif;color:var(--navy);transition:all 0.15s;font-size:12px;font-weight:600;}
+  .cat-btn.selected{background:var(--navy);border-color:var(--navy);color:var(--white);}
+  .cat-icon{font-size:22px;display:block;margin-bottom:5px;}
+  .photo-area{border:2px dashed var(--border);border-radius:12px;padding:22px 16px;text-align:center;cursor:pointer;background:var(--white);transition:all 0.2s;}
+  .photo-area:hover{border-color:var(--blue);background:#f0f6fa;}
+  .photo-area input{display:none;}
+  .photo-preview{width:100%;border-radius:10px;max-height:200px;object-fit:cover;display:none;}
+  .photo-icon{font-size:30px;margin-bottom:6px;}
+  .photo-text{font-size:13px;color:var(--muted);font-weight:500;}
+  .photo-hint{font-size:11px;color:var(--sky);margin-top:3px;}
+  .btn-submit{width:100%;padding:15px;margin-top:8px;background:var(--navy);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:0.5px;transition:background 0.2s;}
+  .btn-submit:hover{background:var(--blue);}
+  .btn-submit:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+  .success-screen{display:none;padding:48px 24px;text-align:center;}
+  .success-circle{width:80px;height:80px;border-radius:50%;background:#e8f4ec;border:3px solid var(--sage);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:36px;}
+  .success-screen h2{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--navy);margin-bottom:10px;}
+  .success-screen p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+  .btn-otro{padding:12px 28px;background:white;border:1.5px solid var(--navy);color:var(--navy);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+  .admin-wrap{padding:20px 16px;max-width:480px;margin:0 auto;}
+  .admin-pin{padding:32px 8px;text-align:center;}
+  .pin-lock{font-size:40px;margin-bottom:12px;}
+  .admin-pin h3{font-family:'Libre Baskerville',serif;font-size:18px;color:var(--navy);margin-bottom:6px;}
+  .admin-pin p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+  .pin-input{width:100%;padding:14px;border:1.5px solid var(--border);border-radius:10px;font-size:24px;letter-spacing:10px;text-align:center;font-family:'Nunito',sans-serif;outline:none;color:var(--navy);background:var(--white);}
+  .pin-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,127,165,0.12);}
+  .btn-pin{width:100%;margin-top:12px;padding:13px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;}
+  .pin-error{color:#c0392b;font-size:12px;margin-top:8px;display:none;font-weight:600;}
+  .admin-panel{display:none;}
+  .admin-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .stat-card{background:var(--white);border-radius:12px;padding:14px 10px;text-align:center;border:1px solid var(--border);}
+  .stat-num{font-size:30px;font-weight:700;color:var(--navy);line-height:1;font-family:'Libre Baskerville',serif;}
+  .stat-label{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;}
+  .filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
+  .filter-btn{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Nunito',sans-serif;color:var(--navy);transition:all 0.15s;letter-spacing:0.3px;}
+  .filter-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
+  .req-card{background:var(--white);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid var(--border);border-left:4px solid var(--blue);}
+  .req-card.est-resuelto{border-left-color:var(--sage);}
+  .req-card.est-gestion{border-left-color:var(--sky);}
+  .req-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .req-cat{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
+  .req-date{font-size:10px;color:var(--muted);font-weight:600;}
+  .req-dir{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:5px;}
+  .req-desc{font-size:12px;color:#4a6a8a;line-height:1.5;margin-bottom:10px;}
+  .req-img{width:100%;border-radius:8px;max-height:160px;object-fit:cover;margin-bottom:10px;}
+  .req-footer{display:flex;align-items:center;gap:8px;}
+  .status-sel{font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-family:'Nunito',sans-serif;color:var(--navy);background:var(--white);cursor:pointer;font-weight:600;}
+  .btn-del{margin-left:auto;padding:5px 10px;background:#fef0f0;border:1px solid #f5c6c2;border-radius:6px;font-size:10px;color:#a32d2d;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+  .empty-state{text-align:center;padding:48px 16px;}
+  .empty-icon{font-size:40px;margin-bottom:12px;}
+  .empty-state p{font-size:13px;color:var(--muted);}
+  .c-seguridad{background:#fdecea;color:#a32d2d;}
+  .c-alumbrado{background:#fef6e0;color:#85500b;}
+  .c-vialidad{background:#ede8f5;color:#5a2080;}
+  .c-basura{background:#e8f4ec;color:#2d6a40;}
+  .c-otro{background:#e8f0f8;color:#1a3a70;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--navy);color:white;padding:10px 20px;border-radius:20px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;transition:transform 0.3s;z-index:999;pointer-events:none;white-space:nowrap;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showView('form')">📋 Enviar Requerimiento</button>
+  <button class="nav-btn" onclick="showView('admin')">🔒 Panel Directiva</button>
+</div>
+
+<div id="view-form">
+  <div class="header">
+    <div class="logo-circle">🏘️</div>
+    <div class="header-sub">Junta de Vecinos</div>
+    <h1>Mirador<br>de la Bahía</h1>
+    <div class="header-city">· Puerto Montt ·</div>
+  </div>
+  <div class="form-wrap" id="form-wrap">
+    <div class="section-label">Tipo de problema</div>
+    <div class="field">
+      <div class="cats">
+        <button class="cat-btn" onclick="selectCat(this,'seguridad')"><span class="cat-icon">🔴</span>Seguridad</button>
+        <button class="cat-btn" onclick="selectCat(this,'alumbrado')"><span class="cat-icon">💡</span>Alumbrado</button>
+        <button class="cat-btn" onclick="selectCat(this,'vialidad')"><span class="cat-icon">🚧</span>Vialidad</button>
+        <button class="cat-btn" onclick="selectCat(this,'basura')"><span class="cat-icon">🗑️</span>Basura / Aseo</button>
+        <button class="cat-btn" onclick="selectCat(this,'otro')"><span class="cat-icon">📌</span>Otro</button>
+      </div>
+    </div>
+    <div class="section-label">Ubicación</div>
+    <div class="field">
+      <label>Dirección o sector del problema</label>
+      <input type="text" id="f-dir" placeholder="Ej: Los Maticos 1837, frente al parque">
+    </div>
+    <div class="section-label">Descripción</div>
+    <div class="field">
+      <label>¿Qué está pasando?</label>
+      <textarea id="f-desc" placeholder="Describe con detalle el problema y desde cuándo ocurre..."></textarea>
+    </div>
+    <div class="section-label">Evidencia</div>
+    <div class="field">
+      <div class="photo-area" onclick="document.getElementById('f-foto').click()">
+        <input type="file" id="f-foto" accept="image/*" capture="environment" onchange="handlePhoto(this)">
+        <img id="foto-preview" class="photo-preview">
+        <div id="photo-placeholder">
+          <div class="photo-icon">📷</div>
+          <div class="photo-text">Toca para adjuntar foto</div>
+          <div class="photo-hint">Opcional · JPG o PNG</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" id="btn-submit" onclick="enviarReq()">Enviar a la Directiva</button>
+  </div>
+  <div class="success-screen" id="success-screen">
+    <div class="success-circle">✅</div>
+    <h2>¡Requerimiento enviado!</h2>
+    <p>La directiva de la Junta de Vecinos Mirador de la Bahía ha recibido tu reporte y lo gestionará a la brevedad.<br><br>Gracias por contribuir a nuestro barrio.</p>
+    <button class="btn-otro" onclick="nuevoReq()">Enviar otro requerimiento</button>
+  </div>
+</div>
+
+<div id="view-admin" style="display:none">
+  <div class="header">
+    <div class="logo-circle">⚙️</div>
+    <div class="header-sub">Directiva</div>
+    <h1>Panel de<br>Requerimientos</h1>
+    <div class="header-city">· JVMB ·</div>
+  </div>
+  <div class="admin-wrap">
+    <div id="admin-pin" class="admin-pin">
+      <div class="pin-lock">🔐</div>
+      <h3>Acceso Directiva</h3>
+      <p>Ingresa el PIN para gestionar<br>los requerimientos del barrio</p>
+      <input type="password" class="pin-input" id="pin-input" placeholder="• • • •" maxlength="4" onkeydown="if(event.key==='Enter')checkPin()">
+      <div class="pin-error" id="pin-error">PIN incorrecto. Inténtalo nuevamente.</div>
+      <button class="btn-pin" onclick="checkPin()">Ingresar al panel</button>
+    </div>
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-stats" id="admin-stats"></div>
+      <div class="filter-row" id="filter-row"></div>
+      <div id="req-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PIN='1234';
+let selectedCat='',photoData='',reqs=[],filterActivo='todos',adminUnlocked=false;
+const CAT_LABEL={seguridad:'Seguridad',alumbrado:'Alumbrado',vialidad:'Vialidad',basura:'Basura / Aseo',otro:'Otro'};
+const CAT_ICON={seguridad:'🔴',alumbrado:'💡',vialidad:'🚧',basura:'🗑️',otro:'📌'};
+
+function loadReqs(){try{const d=localStorage.getItem('jvmb_reqs');reqs=d?JSON.parse(d):[];}catch(e){reqs=[];}}
+function saveReqs(){try{localStorage.setItem('jvmb_reqs',JSON.stringify(reqs));}catch(e){}}
+
+function selectCat(btn,cat){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');selectedCat=cat;}
+
+function handlePhoto(input){
+  if(!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{photoData=e.target.result;const prev=document.getElementById('foto-preview');prev.src=photoData;prev.style.display='block';document.getElementById('photo-placeholder').style.display='none';};
+  reader.readAsDataURL(input.files[0]);
+}
+
+function enviarReq(){
+  const dir=document.getElementById('f-dir').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!selectedCat){showToast('Selecciona una categoría');return;}
+  if(!dir){showToast('Ingresa la dirección o sector');return;}
+  if(!desc){showToast('Describe el problema');return;}
+  const btn=document.getElementById('btn-submit');
+  btn.disabled=true;btn.textContent='Enviando...';
+  reqs.unshift({id:Date.now(),cat:selectedCat,dir,desc,foto:photoData,
+    fecha:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    estado:'pendiente'});
+  saveReqs();
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success-screen').style.display='block';
+}
+
+function nuevoReq(){
+  selectedCat='';photoData='';
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
+  ['f-dir','f-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('foto-preview').style.display='none';
+  document.getElementById('photo-placeholder').style.display='block';
+  document.getElementById('f-foto').value='';
+  const btn=document.getElementById('btn-submit');btn.disabled=false;btn.textContent='Enviar a la Directiva';
+  document.getElementById('form-wrap').style.display='block';
+  document.getElementById('success-screen').style.display='none';
+}
+
+function checkPin(){
+  if(document.getElementById('pin-input').value===PIN){
+    document.getElementById('admin-pin').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    adminUnlocked=true;renderAdmin();
+  }else{document.getElementById('pin-error').style.display='block';document.getElementById('pin-input').value='';}
+}
+
+function renderAdmin(){
+  const vivos=reqs.filter(Boolean);
+  const pend=vivos.filter(r=>r.estado==='pendiente').length;
+  const gest=vivos.filter(r=>r.estado==='gestion').length;
+  const res=vivos.filter(r=>r.estado==='resuelto').length;
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-num">${vivos.length}</div><div class="stat-label">Total</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#a07800">${pend}</div><div class="stat-label">Pendientes</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#1a5a8a">${gest}</div><div class="stat-label">En gestión</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#2d6a40">${res}</div><div class="stat-label">Resueltos</div></div>`;
+  const cats=['todos',...new Set(vivos.map(r=>r.cat))];
+  document.getElementById('filter-row').innerHTML=cats.map(c=>`<button class="filter-btn ${filterActivo===c?'active':''}" onclick="setFilter('${c}')">${c==='todos'?'Todos':(CAT_ICON[c]||'')+' '+(CAT_LABEL[c]||c)}</button>`).join('');
+  const filtrados=filterActivo==='todos'?vivos:vivos.filter(r=>r.cat===filterActivo);
+  const list=document.getElementById('req-list');
+  if(!filtrados.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><p>No hay requerimientos aún.</p></div>';return;}
+  list.innerHTML=filtrados.map(r=>`
+    <div class="req-card est-${r.estado}" id="card-${r.id}">
+      <div class="req-top"><span class="req-cat c-${r.cat}">${CAT_ICON[r.cat]||''} ${CAT_LABEL[r.cat]||r.cat}</span><span class="req-date">${r.fecha}</span></div>
+      <div class="req-dir">📍 ${r.dir}</div>
+      <div class="req-desc">${r.desc}</div>
+      ${r.foto?`<img src="${r.foto}" class="req-img">`:''}
+      <div class="req-footer">
+        <select class="status-sel" onchange="cambiarEstado(${r.id},this)">
+          <option value="pendiente" ${r.estado==='pendiente'?'selected':''}>⏳ Pendiente</option>
+          <option value="gestion" ${r.estado==='gestion'?'selected':''}>🔵 En gestión</option>
+          <option value="resuelto" ${r.estado==='resuelto'?'selected':''}>✅ Resuelto</option>
+        </select>
+        <button class="btn-del" onclick="eliminarReq(${r.id})">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+function setFilter(cat){filterActivo=cat;renderAdmin();}
+function cambiarEstado(id,sel){const r=reqs.find(r=>r&&r.id===id);if(r){r.estado=sel.value;saveReqs();renderAdmin();showToast('Estado actualizado');}}
+function eliminarReq(id){reqs=reqs.filter(r=>r&&r.id!==id);saveReqs();renderAdmin();showToast('Eliminado');}
+
+function showView(v){
+  document.getElementById('view-form').style.display=v==='form'?'block':'none';
+  document.getElementById('view-admin').style.display=v==='admin'?'block':'none';
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&v==='form')||(i===1&&v==='admin')));
+  if(v==='admin'){
+    document.getElementById('admin-pin').style.display=adminUnlocked?'none':'block';
+    document.getElementById('admin-panel').style.display=adminUnlocked?'block':'none';
+    if(adminUnlocked)renderAdmin();
+  }
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+loadReqs();
+</script>
+</body>
+</html>
